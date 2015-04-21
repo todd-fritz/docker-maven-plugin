@@ -2,10 +2,12 @@ package org.jolokia.docker.maven.access;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import org.jolokia.docker.maven.access.log.LogCallback;
 import org.jolokia.docker.maven.access.log.LogGetHandle;
-import org.jolokia.docker.maven.model.*;
+import org.jolokia.docker.maven.model.Container;
+import org.jolokia.docker.maven.util.ContainerLabel;
 
 /**
  * Access to the <a href="http://docs.docker.io/en/latest/reference/api/docker_remote_api/">Docker API</a> which
@@ -76,6 +78,45 @@ public interface DockerAccess {
      * @throws DockerAccessException if the container could not be stopped.
      */
     void stopContainer(String containerId) throws DockerAccessException;
+
+    /**
+     * Query the port mappings for a certain container.
+     *
+     * @param containerId id of the container to query.
+     * @return mapped ports where the keys of this map are the container ports including the protocol (e.g. "8080/tcp")
+     *         and the values are the mapped, potentially dynamically chosen, host ports (e.g. 49000).
+     *         The returned map is never null but can be empty.
+     * @throws DockerAccessException if the query failed.
+     */
+    Map<String, Integer> queryContainerPortMapping(String containerId) throws DockerAccessException;
+
+    /**
+     * Get all containers which are build from an image. Only the last 100 containers are considered
+     *
+     * @param image for which its container are looked up
+     * @return list of container ids
+     * @throws DockerAccessException if the request fails
+     */
+    List<String> getContainersForImage(String image) throws DockerAccessException;
+
+    /**
+     * Get all containers matching a certain label. This might not be a cheap operation especially if many containers
+     * are running. Use with care.
+     *
+     * @param label label which the container must match
+     * @return list of container names matching the label.
+     * @see ContainerLabel#matches(ContainerLabel)
+     */
+    List<String> getContainersWithLabel(ContainerLabel label) throws DockerAccessException;
+
+    /**
+     * Get the id of the newest container started for an image
+     *
+     * @param image for which its container are looked up
+     * @return container id or <code>null</code> if no container has been started for this image.
+     * @throws DockerAccessException if the request fails
+     */
+    String getNewestImageForContainer(String image) throws DockerAccessException;
 
     /**
      * Get logs for a container up to now synchronously.
