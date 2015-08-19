@@ -59,9 +59,6 @@ public class StartMojo extends AbstractDockerMojo {
         RunService runService = serviceHub.getRunService();
 
         LogDispatcher dispatcher = getLogDispatcher(dockerAccess);
-        
-        ContainerLabel label = new ContainerLabel(project.getGroupId(),project.getArtifactId(),project.getVersion());
-        
 
         PortMapping.PropertyWriteHelper portMappingPropertyWriteHelper = new PortMapping.PropertyWriteHelper(portPropertyFile);
         
@@ -80,7 +77,7 @@ public class StartMojo extends AbstractDockerMojo {
                 RunImageConfiguration runConfig = imageConfig.getRunConfiguration();
                 PortMapping portMapping = runService.getPortMapping(runConfig, projProperties);
 
-                String containerId = runService.createAndStartContainer(imageConfig, portMapping, projProperties);
+                String containerId = runService.createAndStartContainer(imageConfig, portMapping, getPomLabel(), projProperties);
 
                 if (showLogs(imageConfig)) {
                     dispatcher.trackContainerLog(containerId, getContainerLogSpec(containerId, imageConfig));

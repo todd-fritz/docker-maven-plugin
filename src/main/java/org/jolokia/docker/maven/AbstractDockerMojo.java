@@ -33,11 +33,7 @@ import org.jolokia.docker.maven.log.ContainerLogOutputSpec;
 import org.jolokia.docker.maven.log.LogDispatcher;
 import org.jolokia.docker.maven.service.QueryService;
 import org.jolokia.docker.maven.service.ServiceHub;
-import org.jolokia.docker.maven.util.AnsiLogger;
-import org.jolokia.docker.maven.util.AuthConfigFactory;
-import org.jolokia.docker.maven.util.EnvUtil;
-import org.jolokia.docker.maven.util.ImageName;
-import org.jolokia.docker.maven.util.Logger;
+import org.jolokia.docker.maven.util.*;
 
 /**
  * Base class for this plugin.
@@ -277,6 +273,11 @@ public abstract class AbstractDockerMojo extends AbstractMojo implements Context
     }
 
     // =================================================================================
+
+    protected PomLabel getPomLabel() {
+        // Label used for this run
+        return new PomLabel(project.getGroupId(),project.getArtifactId(),project.getVersion());
+    }
 
     protected AuthConfig prepareAuthConfig(String image, String configuredRegistry) throws MojoExecutionException {
         ImageName name = new ImageName(image);
